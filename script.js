@@ -10,6 +10,40 @@ const clearPanel = document.querySelector('#clear');
 const shuffleButton = document.querySelector('#shuffle');
 const resetButton = document.querySelector('#reset');
 const retryButton = document.querySelector('#retry');
+const bestLabel = document.querySelector('#best');
+const clearMessage = document.querySelector('#clear-message');
+const previewToggle = document.querySelector('#preview-toggle');
+const preview = document.querySelector('#preview');
+const previewImage = document.querySelector('#preview-image');
+function closePreview() {
+  preview.hidden = true; previewToggle.textContent = '完成図を見る';
+  previewToggle.setAttribute('aria-expanded','false');
+}
+previewToggle.addEventListener('click',() => {
+  if (!ready) return;
+  preview.hidden = !preview.hidden;
+  previewToggle.textContent = preview.hidden ? '完成図を見る' : '完成図を閉じる';
+  previewToggle.setAttribute('aria-expanded',String(!preview.hidden));
+});
+const bestRecords = {};
+function readBest(n) {
+  try {
+    const value = Number(localStorage.getItem(`halloween-slide-puzzle:best:${n}`));
+    if (Number.isSafeInteger(value) && value > 0) return value;
+  } catch {}
+  return null;
+}
+bestRecords[3] = readBest(3);
+bestRecords[4] = readBest(4);
+function showBest() {
+  bestLabel.textContent = bestRecords[size] === null ? '—' : `${bestRecords[size]} 手`;
+}
+function recordBest() {
+  if (moves > 0 && (bestRecords[size] === null || moves < bestRecords[size])) {
+    bestRecords[size] = moves;
+    try { localStorage.setItem(`halloween-slide-puzzle:best:${size}`,String(moves)); } catch {}
+  }
+}
 let size = 3, tiles = [], initial = [], moves = 0, ready = false, finished = false, imageUrl = '';
 function neighbors(index, n) {
   const result = [], row = Math.floor(index / n), col = index % n;
@@ -38,8 +72,10 @@ function shuffled(n) {
 function render() {
   board.replaceChildren(); board.style.setProperty('--size',size);
   movesLabel.textContent = moves;
+  showBest();
   clearPanel.hidden = !finished;
   if (finished) {
+    clearMessage.textContent = size === 3 ? 'ノクト「完成だね。いい感じ。」' : 'ルクス「やったー！そろった！」';
     const img = document.createElement('img'); img.src = imageUrl;
     img.alt = '完成したハロウィンのイラスト'; img.className = 'finished'; board.append(img);
     statusLabel.textContent = `${moves}手で完成しました！`;
@@ -67,7 +103,9 @@ function move(index) {
   const blank = tiles.indexOf(size*size-1);
   if (!neighbors(blank,size).includes(index)) return;
   [tiles[blank],tiles[index]] = [tiles[index],tiles[blank]];
-  moves++; finished = isSolved(tiles); render();
+  moves++; finished = isSolved(tiles);
+  if (finished) recordBest();
+  render();
   if (finished) document.querySelector('#again').focus();
   else board.children[blank]?.focus();
 }
@@ -84,13 +122,16 @@ resetButton.addEventListener('click',() => {
   tiles = [...initial]; moves = 0; finished = false; render();
 });
 function loadImage() {
+  closePreview(); previewToggle.disabled = true;
   size = Number(sizeSelect.value);
+  showBest();
   ready = false; sizeSelect.disabled = true; shuffleButton.disabled = resetButton.disabled = true;
   retryButton.hidden = true; statusLabel.textContent = '画像を読み込んでいます…';
   const local = location.protocol === 'file:' || ['localhost','127.0.0.1'].includes(location.hostname);
   imageUrl = (local ? './' : IMAGE_BASE_URL) + IMAGE_FILES[size];
   const img = new Image();
   img.onload = () => {
+    previewImage.src = imageUrl; previewToggle.disabled = false;
     ready = true; sizeSelect.disabled = false; shuffleButton.disabled = resetButton.disabled = false; start();
   };
   img.onerror = () => {statusLabel.textContent = '画像を読み込めませんでした。もう一度試してね。'; retryButton.hidden = false;};
