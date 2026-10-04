@@ -15,15 +15,19 @@ const clearMessage = document.querySelector('#clear-message');
 const previewToggle = document.querySelector('#preview-toggle');
 const preview = document.querySelector('#preview');
 const previewImage = document.querySelector('#preview-image');
+let previewTimer = null;
 function closePreview() {
+  clearTimeout(previewTimer); previewTimer = null;
   preview.hidden = true; previewToggle.textContent = '完成図を見る';
   previewToggle.setAttribute('aria-expanded','false');
 }
 previewToggle.addEventListener('click',() => {
   if (!ready) return;
-  preview.hidden = !preview.hidden;
-  previewToggle.textContent = preview.hidden ? '完成図を見る' : '完成図を閉じる';
-  previewToggle.setAttribute('aria-expanded',String(!preview.hidden));
+  if (!preview.hidden) { closePreview(); return; }
+  preview.hidden = false;
+  previewToggle.textContent = '完成図を閉じる';
+  previewToggle.setAttribute('aria-expanded','true');
+  previewTimer = setTimeout(closePreview,3000);
 });
 const bestRecords = {};
 function readBest(n) {
@@ -111,6 +115,7 @@ function move(index) {
 }
 function start() {
   if (!ready) return;
+  closePreview();
   size = Number(sizeSelect.value); tiles = shuffled(size); initial = [...tiles];
   moves = 0; finished = false; render();
 }
@@ -119,6 +124,7 @@ sizeSelect.addEventListener('change',loadImage);
 document.querySelector('#again').addEventListener('click',start);
 resetButton.addEventListener('click',() => {
   if (!ready) return;
+  closePreview();
   tiles = [...initial]; moves = 0; finished = false; render();
 });
 function loadImage() {
