@@ -100,7 +100,7 @@ function render() {
     const label = document.createElement('span'); label.textContent = value+1; label.setAttribute('aria-hidden','true'); tile.append(label);
     tile.addEventListener('click',() => move(index)); board.append(tile);
   });
-  statusLabel.textContent = '空白のとなりのピースをタップしてね';
+  statusLabel.textContent = 'ヒント：完成図は3秒だけ見られるよ';
 }
 function move(index) {
   if (!ready || finished) return;
