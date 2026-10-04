@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ハロウィン・スライドパズル</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <p class="eyebrow">🎃 HAPPY HALLOWEEN 🎃</p>
+    <h1>スライドパズル</h1>
+    <p>空いているマスのとなりをタップして<br>ハロウィンの絵を完成させよう！</p>
+    <div class="toolbar"><label>サイズ <select id="size"><option value="3">3 × 3</option><option value="4">4 × 4</option></select></label><span>手数 <strong id="moves">0</strong></span></div>
+    <div id="board" aria-label="スライドパズル"></div>
+    <p id="status" role="status" aria-live="polite">画像を読み込んでいます…</p>
+    <div class="actions"><button id="shuffle" disabled>シャッフル</button><button id="reset" disabled>リセット</button></div>
+    <section id="clear" hidden><h2>🎉 Happy Halloween!</h2><p>完成！みんながそろったね。</p><button id="again">もう一度あそぶ</button></section>
+    <button id="retry" hidden>画像を再読み込み</button>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
