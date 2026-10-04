@@ -1,7 +1,7 @@
 'use strict';
 // 公開画像を差し替える場合は、このURLを変更してください。
 const IMAGE_BASE_URL = 'https://yongmars.github.io/halloween-slide-puzzle/';
-const IMAGE_FILES = {3: 'スライドパズル用_3x3.png', 4: 'スライドパズル用.png'};
+const IMAGE_FILES = {3: 'スライドパズル用_3x3_帽子修正版.png', 4: 'スライドパズル用.png'};
 const board = document.querySelector('#board');
 const sizeSelect = document.querySelector('#size');
 const movesLabel = document.querySelector('#moves');
