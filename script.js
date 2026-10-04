@@ -18,7 +18,7 @@ const previewImage = document.querySelector('#preview-image');
 let previewTimer = null;
 function closePreview() {
   clearTimeout(previewTimer); previewTimer = null;
-  preview.hidden = true; previewToggle.textContent = '完成図を見る';
+  preview.hidden = true; previewToggle.textContent = 'ヒント：完成図を見る';
   previewToggle.setAttribute('aria-expanded','false');
 }
 previewToggle.addEventListener('click',() => {
@@ -82,6 +82,7 @@ function render() {
     clearMessage.textContent = size === 3 ? 'ノクト「完成だね。いい感じ。」' : 'ルクス「やったー！そろった！」';
     const img = document.createElement('img'); img.src = imageUrl;
     img.alt = '完成したハロウィンのイラスト'; img.className = 'finished'; board.append(img);
+    statusLabel.hidden = false;
     statusLabel.textContent = `${moves}手で完成しました！`;
     return;
   }
@@ -100,7 +101,8 @@ function render() {
     const label = document.createElement('span'); label.textContent = value+1; label.setAttribute('aria-hidden','true'); tile.append(label);
     tile.addEventListener('click',() => move(index)); board.append(tile);
   });
-  statusLabel.textContent = 'ヒント：完成図は3秒だけ見られるよ';
+  statusLabel.textContent = '';
+  statusLabel.hidden = true;
 }
 function move(index) {
   if (!ready || finished) return;
@@ -132,7 +134,7 @@ function loadImage() {
   size = Number(sizeSelect.value);
   showBest();
   ready = false; sizeSelect.disabled = true; shuffleButton.disabled = resetButton.disabled = true;
-  retryButton.hidden = true; statusLabel.textContent = '画像を読み込んでいます…';
+  retryButton.hidden = true; statusLabel.hidden = false; statusLabel.textContent = '画像を読み込んでいます…';
   const local = location.protocol === 'file:' || ['localhost','127.0.0.1'].includes(location.hostname);
   imageUrl = (local ? './' : IMAGE_BASE_URL) + IMAGE_FILES[size];
   const img = new Image();
